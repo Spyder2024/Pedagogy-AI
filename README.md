@@ -1,168 +1,140 @@
-# Pedagogy-AI
-Transforming static study material into intelligent dialogue using T5 Transformers and Semantic Analysis.
+Here is a professional, submission-ready README.md file. It is structured to help judges instantly understand the architecture, run the code locally, and see how it deploys to the cloud.
 
-This is a comprehensive, professional, and visually engaging README designed to stand out, particularly for a portfolio or competition submission like Kaggle.
+🎓 Pedagogy AI
 
-It leverages the assets and technical details we've developed in the previous steps.
+An Autonomous Multi-Agent System for Educational Content Auditing & Quiz Generation.
 
------
+<img width="2816" height="1536" alt="Gemini_Generated_Image_5bpwvr5bpwvr5bpw" src="https://github.com/user-attachments/assets/dbf447f4-db60-486f-86e0-1235de774b53" />
 
-<img width="2816" height="1536" alt="Gemini_Generated_Image_qeondrqeondrqeon (1)" src="https://github.com/user-attachments/assets/40d2e375-be7e-448b-99ad-c9b1811ba5c5" />
+Pedagogy AI uses a Hub-and-Spoke architecture to ingest raw educational text, analyze its structure using deterministic tools, and generate verified quiz content using specialized AI agents. It is built in Pure Python to demonstrate deep understanding of Agent primitives without external frameworks.
 
-# 🎓 Pedagogy AI: The Autonomous Active Learning Agent
+🏗️ Architecture
 
-[](https://www.python.org/)
-[](https://flask.palletsprojects.com/)
-[](https://huggingface.co/)
-[](https://opensource.org/licenses/MIT)
+The system follows a strict Object-Oriented design pattern:
 
-> **Transforming passive reading into active mastery using state-of-the-art NLP.**
+The Hub (Orchestrator): The central controller that manages the workflow and SessionState.
 
------
+Spoke 1 (Custom Tool): A deterministic Python Regex tool extracts keywords to ground the AI in facts.
 
-\<p align="center"\>
-\<img src="image\_1.png" alt="Pedagogy AI Conceptual Header Image" width="800"\>
-\</p\>
+Spoke 2 (The Analyst): An AI agent that summarizes content based only on the extracted keywords.
 
-## 📖 About The Project
+Spoke 3 (The Quiz Master): An AI agent that generates JSON questions based only on the Analyst's summary (preventing hallucination from raw text).
 
-### The Problem: The "Illusion of Competence"
+<img width="2816" height="1536" alt="Gemini_Generated_Image_9stub59stub59stu" src="https://github.com/user-attachments/assets/265dd9aa-3e8f-4dc8-ba35-b8cf2ae43213" />
 
-Students often read textbooks passively, nodding along and feeling like they understand the material. This is the "illusion of competence." True learning requires **active recall**—struggling to retrieve information from memory. However, self-learners face a critical bottleneck: creating high-quality practice questions is tedious, and grading your own open-ended answers objectively is impossible.
+📂 File Structure
+File	Responsibility
+main.py	Entry Point. Handles CLI execution and exposes the Flask app factory.
+orchestrator.py	The Hub. Manages logic flow and error handling.
+agents.py	The Brains. Defines AnalystAgent and QuizMasterAgent (Inheritance).
+tools.py	The Tools. Deterministic functions (Regex/NLP) for factual data extraction.
+state.py	The Memory. A SessionState dataclass for persistence and logging.
+🚀 Key Features (Rubric Implementation)
 
-### The Solution: An On-Demand AI Tutor
+Multi-Agent Orchestration: Implements a coordinator pattern where agents pass data via a shared state, not direct chat.
 
-**Pedagogy AI** acts as an autonomous educational agent to bridge this gap. It ingests any raw text—a chapter, an article, or study notes—and immediately transforms it into an interactive assessment loop.
+Hybrid Intelligence: Combines Symbolic AI (Regex for keywords) with Generative AI (Gemini 1.5 Pro) for optimal accuracy.
 
-By using advanced Large Language Models (LLMs) to generate relevant questions and semantic search models to evaluate answers based on *meaning* rather than keywords, it provides the immediate, objective feedback necessary for deep learning.
+State Management: A robust SessionState class persists the context, logs, and results across the lifecycle of a request.
 
-## ✨ Key Features
+Observability: Built-in tracing logs (state.log) allow developers to see exactly why an agent made a decision.
 
-  * **🤖 Intelligent Question Generation:** Uses a fine-tuned T5 Transformer to generate factually accurate questions conditioned specifically on your provided text.
-  * **🧠 Semantic Answer Evaluation:** Grades answers based on conceptual similarity using Sentence-BERT, not brittle keyword matching. It understands synonyms and phrasing differences.
-  * **⚡ Instant Feedback Loop:** Provides an immediate score (0-100) and qualitative feedback to reinforce learning.
-  * **🖥️ Distraction-Free UI:** A clean, modern interface built with Tailwind CSS designed to focus the user on the study material.
+🛠️ Installation & Setup
+Prerequisites
 
------
+Python 3.10+
 
-## ⚙️ How It Works: The Architecture
+A Google Cloud Project with Gemini API enabled.
 
-The agent mimics the cognitive workflow of a human tutor using a two-stage machine learning pipeline.
+1. Clone & Install
+code
+Bash
+download
+content_copy
+expand_less
+git clone https://github.com/your-repo/pedagogy-ai.git
+cd pedagogy-ai
+pip install google-generativeai flask
+2. Set API Key
 
-<img width="2816" height="1536" alt="Gemini_Generated_Image_n884upn884upn884" src="https://github.com/user-attachments/assets/fd3e4a92-a3ef-428e-99bc-9afce9a76ad7" />
+You must set your Gemini API key as an environment variable.
 
-\<p align="center"\>
-\<img src="image\_3.png" alt="Pedagogy AI Conceptual Flowchart" width="800"\>
-\</p\>
+code
+Bash
+download
+content_copy
+expand_less
+# Linux/Mac
+export GEMINI_API_KEY="your_actual_api_key_here"
 
-### Stage 1: The "Teacher" (Question Generation)
+# Windows (PowerShell)
+$env:GEMINI_API_KEY="your_actual_api_key_here"
+💻 Usage
+Option A: Run Locally (CLI Mode)
 
-We utilize a **T5 (Text-to-Text Transfer Transformer)** model specifically fine-tuned for the task of question generation.
+Perfect for testing the agents' logic immediately.
 
-  * Unlike generic LLMs that might hallucinate external facts, this model is conditioned strictly on the input context.
-  * We prepend the prefix `generate question:` to the user's text.
-  * The model uses **beam search** to explore multiple potential outputs, selecting the most logically sound and grammatically fluent question derived from the text.
+code
+Bash
+download
+content_copy
+expand_less
+python main.py
 
-### Stage 2: The "Grader" (Semantic Evaluation)
+Output: You will see the step-by-step logs, the extracted keywords, the analyst summary, and the final JSON quiz printed to the console.
 
-This is the core innovation. Standard regex or keyword-based graders fail when a student uses different phrasing than the textbook. We solve this using **Sentence-BERT (SBERT)** for Semantic Textual Similarity (STS).
+Option B: Run as a Web Server (API Mode)
 
-1.  The system takes the **Student's Answer** and the **Reference Source Text**.
-2.  It passes both through the SBERT model to generate dense, high-dimensional vector embeddings. These vectors represent the *meaning* of the text in numerical space.
-3.  It calculates the **Cosine Similarity** between these two vectors. A high similarity score means the student's answer and the source text share the same semantic meaning, even if the words differ.
+The project includes a Flask wrapper for API access.
 
------
+code
+Bash
+download
+content_copy
+expand_less
+# Start the server
+export FLASK_APP=main.py
+flask run --port 8080
 
-## 📂 Project Structure
+Test with cURL:
 
-The project is organized for modularity and ease of deployment.
+code
+Bash
+download
+content_copy
+expand_less
+curl -X POST http://127.0.0.1:8080/audit \
+     -H "Content-Type: application/json" \
+     -d '{"text": "Photosynthesis turns light into chemical energy using Chlorophyll."}'
+☁️ Deployment (Google Cloud Run)
 
-\<p align="center"\>
-\<img src="image\_2.png" alt="Pedagogy AI Project File Structure" width="500"\>
-\</p\>
+Since the application is stateless (using SessionState per request) and container-ready, it can be deployed easily.
 
-  * `app.py`: The Flask backend API that serves the frontend and orchestrates the ML models.
-  * `question_generator.py`: Encapsulates the T5 model logic for loading weights and generating questions.
-  * `answer_evaluator.py`: Encapsulates the Sentence-BERT logic for embedding text and calculating cosine similarity scores.
-  * `templates/index.html`: The single-page frontend interface.
+Create a Procfile (for gunicorn):
 
------
+code
+Text
+download
+content_copy
+expand_less
+web: gunicorn "main:create_app()" --bind 0.0.0.0:$PORT
 
-## 🛠️ Tech Stack
+Deploy Command:
 
-  * **Backend Framework:** Python (Flask)
-  * **Machine Learning Libraries:** PyTorch, Hugging Face Transformers, Sentence-Transformers
-  * **ML Models:**
-      * QG: `valhalla/t5-base-qg-hl`
-      * Eval: `sentence-transformers/all-MiniLM-L6-v2`
-  * **Frontend:** HTML5, Vanilla JavaScript, Tailwind CSS (via CDN)
+code
+Bash
+download
+content_copy
+expand_less
+gcloud run deploy pedagogy-ai \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY="your_key"
+⚠️ Limitations & Guidelines
 
------
+Strict Typing: The codebase uses typing.List and typing.Dict to ensure data integrity.
 
-## 🚀 Getting Started
+No Hardcoded Keys: Security best practices are followed by using os.environ.
 
-Follow these steps to set up the project locally.
-
-### Prerequisites
-
-  * Python 3.8 or higher installed.
-  * Git (optional, for cloning).
-
-### Installation
-
-1.  **Clone the repository** (or download the source files into a folder named `pedagogy-ai`):
-
-    ```bash
-    git clone https://github.com/yourusername/pedagogy-ai.git
-    cd pedagogy-ai
-    ```
-
-2.  **Create and activate a virtual environment** (Recommended):
-
-    ```bash
-    # Windows
-    python -m venv venv
-    venv\Scripts\activate
-
-    # macOS/Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-
-3.  **Install dependencies:**
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-    *Note: The first time you run this, it will download the pre-trained ML models from Hugging Face (approx. 500MB - 1GB total). This is a one-time process.*
-
-### Running the Application
-
-1.  Start the Flask server:
-
-    ```bash
-    python app.py
-    ```
-
-2.  Wait for the output confirming the server is running:
-    `* Running on http://127.0.0.1:5000`
-
-3.  Open your web browser and navigate to **[http://127.0.0.1:5000](https://www.google.com/url?sa=E&source=gmail&q=http://127.0.0.1:5000)**.
-
------
-
-## 🛣️ Future Roadmap
-
-  * [ ] **Adaptive Difficulty:** Implement logic where the agent generates harder analytical questions if the student scores well on factual questions.
-  * [ ] **Precise Answer Extraction:** Integrate a QA model (like RoBERTa trained on SQuAD) to extract the exact "gold standard" answer span from the text for even more precise grading comparison.
-  * [ ] **Database Integration:** Add SQLite or PostgreSQL to save user progress, generated questions, and scores.
-  * [ ] **Docker Support:** Containerize the application for easy deployment to cloud platforms like AWS or Render.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome\! Feel free to check the [issues page](https://www.google.com/search?q=https://github.com/yourusername/pedagogy-ai/issues).
-
-
-
-*Developed with ❤️ for active learners everywhere.*
+Error Handling: The JSON parser includes try/except blocks to handle potential LLM formatting errors gracefully.
